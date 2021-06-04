@@ -1,6 +1,5 @@
 package nl.belastingdienst;
 
-import nl.belastingdienst.force.HashBuilder;
 import nl.belastingdienst.force.MD5Decryptor;
 
 public class Start {

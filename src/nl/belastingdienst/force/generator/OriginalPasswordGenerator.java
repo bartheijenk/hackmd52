@@ -1,44 +1,40 @@
-package nl.belastingdienst.force;
+package nl.belastingdienst.force.generator;
 
 import java.util.LinkedList;
-import java.util.function.Supplier;
 
-public class HashBuilder implements Supplier<String> {
+public class OriginalPasswordGenerator implements PasswordGenerator {
     private LinkedList<CharacterSupplier> characterSuppliers = new LinkedList<>();
 
 
-    public HashBuilder() {
+    public OriginalPasswordGenerator() {
         characterSuppliers.add(new CharacterSupplier());
     }
 
     @Override
-    public String get() {
-        // links eerst, if exhausted, go right
-
+    public String getPassword() {
         boolean didGet = false;
         StringBuilder result = new StringBuilder();
         for (CharacterSupplier currentSupplier : characterSuppliers) {
             if (didGet) {
                 result.append(currentSupplier.peek());
             } else {
-                Character c = currentSupplier.get();
-                if (c != null) {
+                Character c;
+                if (currentSupplier.hasNext()) {
+                    c = currentSupplier.next();
                     didGet = true;
                 } else {
                     currentSupplier.reset();
-                    c = currentSupplier.get();
+                    c = currentSupplier.next();
                 }
                 result.append(c);
             }
         }
 
         if(!didGet) {
-//            characterSuppliers.add(new CharacterSupplier());
             addCharacterSupplier();
-            return this.get();
+            return this.getPassword();
         }
 
-        System.out.println(result);
         return result.toString();
     }
 
@@ -48,28 +44,5 @@ public class HashBuilder implements Supplier<String> {
             characterSupplier.reset();
         }
     }
-
-    private void resetAll() {
-        for (CharacterSupplier sup :
-                characterSuppliers) {
-            sup.reset();
-        }
-    }
-    // Deze bepaalt de lengte
-    /*
-     aaaa
-     baaa
-
-     abaa
-     acaa
-     --
-     aaa
-     baa
-     caa
-     ..
-     zaa
-     aba
-     bba
-    */
 
 }
